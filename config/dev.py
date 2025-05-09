@@ -14,6 +14,8 @@ from config import RUN_VER
 from config.default import FRONTEND_BACKEND_SEPARATION
 from blueapps.conf.validators import EnvValidator
 
+import pymysql
+pymysql.install_as_MySQLdb()
 
 EnvValidator(RUN_VER).validate()
 
@@ -26,9 +28,9 @@ else:
 RUN_MODE = "DEVELOP"
 
 # 自定义本地环境日志级别
-# from blueapps.conf.log import set_log_level # noqa
-# LOG_LEVEL = "DEBUG"
-# LOGGING = set_log_level(locals())
+from blueapps.conf.log import set_log_level # noqa
+LOG_LEVEL = "DEBUG"
+LOGGING = set_log_level(locals())
 
 # APP本地静态资源目录
 STATIC_URL = "/static/"
@@ -37,21 +39,23 @@ STATIC_URL = "/static/"
 # REMOTE_STATIC_URL = '%sremote/' % STATIC_URL
 
 # Celery 消息队列设置 RabbitMQ
-# BROKER_URL = 'amqp://guest:guest@localhost:5672//'
+BROKER_URL = 'amqp://guest:guest@localhost:5672//'
 # Celery 消息队列设置 Redis
-BROKER_URL = "redis://localhost:6379/0"
+# BROKER_URL = "redis://localhost:6379/0"
+
+CELERY_RESULT_BACKEND = 'django-db'
 
 DEBUG = True
 
 # 本地开发数据库设置
 # USE FOLLOWING SQL TO CREATE THE DATABASE NAMED APP_CODE
-# SQL: CREATE DATABASE `{{ app_code }}` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci; # noqa: E501
+# SQL: CREATE DATABASE lessonlearning DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci; # noqa: E501
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": APP_CODE,  # noqa
+        "NAME": "lessonlearning",  # noqa
         "USER": "root",
-        "PASSWORD": "",
+        "PASSWORD": "20010506XZC",
         "HOST": "localhost",
         "PORT": "3306",
     },

@@ -19,6 +19,7 @@ urlpatterns = [
     # 开启前请修改路径随机内容，降低被猜测命中几率，提升安全性
     # re_path(r'^admin_'{6个以上任意字符串}'/', admin.site.urls),
     # 如果你习惯使用 Django 模板，请在 bk_framework_app 里开发你的应用
+    re_path(r"^", include("moments.urls")),
     re_path(r"^", include("bk_framework_app.urls")),
     # 如果你通过drf来开发后端接口，请在 bk_framework_api 里开发你的应用
     re_path(r"^api/", include("bk_framework_api.urls")),

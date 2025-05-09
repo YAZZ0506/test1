@@ -14,6 +14,8 @@ specific language governing permissions and limitations under the License.
 from blueapps.conf.default_settings import *  # noqa
 from blueapps.conf.log import get_logging_config_dict
 
+ALLOWED_HOSTS=['*']
+
 # 这里是默认的 INSTALLED_APPS，大部分情况下，不需要改动
 # 如果你已经了解每个默认 APP 的作用，确实需要去掉某些 APP，请去掉下面的注释，然后修改
 # INSTALLED_APPS = (
@@ -37,9 +39,9 @@ INSTALLED_APPS += (
     "bk_framework_app",
     "rest_framework",
     "drf_yasg",
+    "moments",
     
 )
-
 # 这里是默认的中间件，大部分情况下，不需要改动
 # 如果你已经了解每个默认 MIDDLEWARE 的作用，确实需要去掉某些 MIDDLEWARE，或者改动先后顺序，请去掉下面的注释，然后修改
 # MIDDLEWARE = (
@@ -86,7 +88,7 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 # worker: python manage.py celery worker -l info
 # beat: python manage.py celery beat -l info
 # 不使用时，请修改为 False，并删除项目目录下的 Procfile 文件中 celery 配置
-IS_USE_CELERY = False
+IS_USE_CELERY = True
 
 # 前后端分离开发配置开关，设置为True时dev和stag环境会自动加载允许跨域的相关选项
 FRONTEND_BACKEND_SEPARATION = False
@@ -95,7 +97,9 @@ FRONTEND_BACKEND_SEPARATION = False
 CELERYD_CONCURRENCY = os.getenv("BK_CELERYD_CONCURRENCY", 2)
 
 # CELERY 配置，申明任务的文件路径，即包含有 @task 装饰器的函数文件
-CELERY_IMPORTS = ()
+CELERY_IMPORTS = (
+    "moments.tasks"
+)
 
 # log level setting
 LOG_LEVEL = "INFO"
