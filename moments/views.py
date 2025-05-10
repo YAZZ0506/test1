@@ -37,13 +37,14 @@ def submit_post(request):
         uploaded_file = request.FILES.get("pics")
         if uploaded_file:
             name = 'static/image/' + uploaded_file.name
+            save_name = 'image/' + uploaded_file.name
             with open("./moments/{}".format(name), 'wb') as handle:
                 for block in uploaded_file.chunks():
                     handle.write(block)
         else:
-            name = ''
-        if text:
-            status = Status(user=user, text=text, pics=name)
+            save_name = None
+        if text or save_name:
+            status = Status(user=user, text=text, pics=save_name)
             status.save()
         return redirect('moments:show_status')
 

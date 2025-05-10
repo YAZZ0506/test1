@@ -21,7 +21,7 @@ class WeChatUser(models.Model):
 
 class Status(models.Model):
     user = models.ForeignKey(WeChatUser, models.CASCADE)
-    text = models.CharField(max_length=280)
+    text = models.CharField(max_length=280, null=True, blank=True)
     pics = models.CharField(max_length=100, null=True, blank=True)
     pub_time = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(WeChatUser, through='Like', related_name='liked_statuses', blank=True)

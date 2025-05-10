@@ -13,10 +13,14 @@
                 </div>
                 <div class="col-md-10">
                     <h1 style="font-size:70px">{{ status.user }}</h1>
+                    {% if status.text%}
                     <p style="font-size:50px">{{ status.text }}</p>
+                    {% endif %}
+                    {% if status.pics%}
                     <div class="col-md-8">
-                        <img src="{{ status.pics }}" class="img-responsive">
+                        <img src="{{ STATIC_URL }}{{ status.pics }}" class="img-responsive">
                     </div>
+                    {% endif %}
                     <div class="col-md-12">
                         <p style="float:left; color:gray; font-size:30px">{{ status.pub_time | date:"Y m.d H:m "}}</p>
                         <div class="dropdown" style="float:right">
