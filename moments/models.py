@@ -24,6 +24,8 @@ class Status(models.Model):
     text = models.CharField(max_length=280)
     pics = models.CharField(max_length=100, null=True, blank=True)
     pub_time = models.DateTimeField(auto_now_add=True)
+    likes = models.ManyToManyField(WeChatUser, through='Like', related_name='liked_statuses', blank=True)
+    comments = models.ManyToManyField(WeChatUser, through='Comment', related_name='commented_statuses')
 
     objects = models.Manager()
 
@@ -32,4 +34,24 @@ class Status(models.Model):
 
     class Meta:
         ordering = ['id']
+
+
+class Comment(models.Model):
+    status = models.ForeignKey(Status, on_delete=models.CASCADE)
+    user = models.ForeignKey(WeChatUser, on_delete=models.CASCADE)
+    text = models.CharField(max_length=280)
+    pub_time = models.DateTimeField(auto_now_add=True)
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies')
+
+    def __str__(self):
+        return self.text
+
+
+class Like(models.Model):
+    status = models.ForeignKey(Status, on_delete=models.CASCADE)
+    user = models.ForeignKey(WeChatUser, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created_at']
 

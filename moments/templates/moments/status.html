@@ -4,9 +4,10 @@
 {% block status %}class="active"{% endblock %}
 
 {% block content %}
+    {% csrf_token %}
     <div class="container">
         {% for status in statuses %}
-            <div class="row">
+            <div class="row" id="status-{{ status.id }}">
                 <div class="col-md-2">
                     <img src="{{ status.user.user_pic }}" class="img-responsive img-thumbnail">
                 </div>
@@ -18,21 +19,176 @@
                     </div>
                     <div class="col-md-12">
                         <p style="float:left; color:gray; font-size:30px">{{ status.pub_time | date:"Y m.d H:m "}}</p>
-                        <button style="float:right;background-color:gray" class="btn btn-default"><span class="glyphicon glyphicon-option-horizontal" aria-hidden="true" style="color:white"></span></button>
+                        <div class="dropdown" style="float:right">
+                            <button class="btn btn-default" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color:gray">
+                                <span class="glyphicon glyphicon-option-horizontal" aria-hidden="true" style="color:white"></span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-right" style="font-size:20px">
+                                <li><a href="#" onclick="likeStatus({{ status.id }}); return false;">
+                                    <span class="glyphicon {% if request.user.wechatuser in status.likes.all %}glyphicon-heart{% else %}glyphicon-heart-empty{% endif %}" aria-hidden="true"></span>
+                                    点赞
+                                </a></li>
+                                {% if status.user.user == request.user %}
+                                <li><a href="#" onclick="deleteStatus({{ status.id }}); return false;">
+                                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                                    删除
+                                </a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
                     </div>
                     <div class="col-md-12" style="background-color:gray; padding-top:20px">
-                        <p style="font-size:30px"><span class="glyphicon glyphicon-heart-empty" aria-hidden="true"></span> Monkey, Serpent</p>
+                        <div id="likes-list-{{ status.id }}" style="margin-bottom: 10px">
+                            {% for like in status.like_set.all %}
+                            <div class="like-item">
+                                <span style="font-size:30px">{{ like.user.user.username }}</span>
+                                <span style="font-size:20px; color: #999; margin-left: 10px">{{ like.created_at|date:"Y-m-d H:i" }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
                         <hr>
-                        <p style="font-size:30px">Monkey: Great!</p>
-                        <p style="font-size:30px">Po@Monkey: Thanks!</p>
-
+                        <div id="comments-{{ status.id }}">
+                            {% for comment in status.comment_set.all %}
+                                {% if not comment.parent %}
+                                <div class="comment" id="comment-{{ comment.id }}">
+                                    <p style="font-size:30px">{{ comment.user.user.username }}: {{ comment.text }}</p>
+                                    <button onclick="showReplyForm({{ status.id }}, {{ comment.id }})" class="btn btn-link" style="font-size:20px">Reply</button>
+                                    <div id="replies-{{ comment.id }}">
+                                        {% for reply in comment.replies.all %}
+                                            <p style="font-size:30px">{{ reply.user.user.username }}@{{ comment.user.user.username }}: {{ reply.text }}</p>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="comment-form">
+                            <textarea class="form-control" id="comment-text-{{ status.id }}" rows="2" style="font-size:20px"></textarea>
+                            <button onclick="addComment({{ status.id }})" class="btn btn-primary" style="font-size:20px;margin-top:10px">Comment</button>
+                        </div>
                     </div>
-
                 </div>
             </div>
             <hr>
         {% endfor %}
-
-
     </div>
+
+    <script>
+        // 获取CSRF token的函数
+        function getCSRFToken() {
+            return document.querySelector('[name=csrfmiddlewaretoken]').value;
+        }
+
+        function likeStatus(statusId) {
+            fetch(`/status/${statusId}/like`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCSRFToken()
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const likeButton = document.querySelector(`#status-${statusId} .dropdown-menu .glyphicon`);
+                const likesList = document.querySelector(`#likes-list-${statusId}`);
+                
+                if (data.liked) {
+                    likeButton.classList.remove('glyphicon-heart-empty');
+                    likeButton.classList.add('glyphicon-heart');
+                } else {
+                    likeButton.classList.remove('glyphicon-heart');
+                    likeButton.classList.add('glyphicon-heart-empty');
+                }
+                
+                // 更新点赞列表
+                if (data.likes_list.length > 0) {
+                    likesList.innerHTML = data.likes_list.map(like => `
+                        <div class="like-item">
+                            <span style="font-size:30px">${like.username}</span>
+                            <span style="font-size:20px; color: #999; margin-left: 10px">${like.time}</span>
+                        </div>
+                    `).join('');
+                    likesList.style.display = 'block';
+                } else {
+                    likesList.innerHTML = '';
+                    likesList.style.display = 'none';
+                }
+            });
+        }
+
+        function deleteStatus(statusId) {
+            if (confirm('Are you sure you want to delete this status?')) {
+                fetch(`/status/${statusId}/delete`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCSRFToken()
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.querySelector(`#status-${statusId}`).remove();
+                    }
+                });
+            }
+        }
+
+        function addComment(statusId, parentId = null) {
+            const text = document.querySelector(`#comment-text-${statusId}`).value;
+            if (!text) return;
+
+            const data = new FormData();
+            data.append('text', text);
+            if (parentId) {
+                data.append('parent_id', parentId);
+            }
+
+            fetch(`/status/${statusId}/comment`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: data
+            })
+            .then(response => response.json())
+            .then(data => {
+                const commentsDiv = document.querySelector(`#comments-${statusId}`);
+                const newComment = document.createElement('div');
+                newComment.className = 'comment';
+                newComment.id = `comment-${data.id}`;
+                
+                if (parentId) {
+                    const parentComment = document.querySelector(`#comment-${parentId}`);
+                    const repliesDiv = document.querySelector(`#replies-${parentId}`);
+                    newComment.innerHTML = `<p style="font-size:30px">${data.username}@${parentComment.querySelector('p').textContent.split(':')[0]}: ${data.text}</p>`;
+                    repliesDiv.appendChild(newComment);
+                } else {
+                    newComment.innerHTML = `
+                        <p style="font-size:30px">${data.username}: ${data.text}</p>
+                        <button onclick="showReplyForm(${statusId}, ${data.id})" class="btn btn-link" style="font-size:20px">Reply</button>
+                        <div id="replies-${data.id}"></div>
+                    `;
+                    commentsDiv.appendChild(newComment);
+                }
+                
+                document.querySelector(`#comment-text-${statusId}`).value = '';
+            });
+        }
+
+        function showReplyForm(statusId, parentId) {
+            const commentDiv = document.querySelector(`#comment-${parentId}`);
+            const existingForm = commentDiv.querySelector('.reply-form');
+            if (existingForm) {
+                existingForm.remove();
+                return;
+            }
+
+            const replyForm = document.createElement('div');
+            replyForm.className = 'reply-form';
+            replyForm.innerHTML = `
+                <textarea class="form-control" id="reply-text-${statusId}-${parentId}" rows="2" style="font-size:20px"></textarea>
+                <button onclick="addComment(${statusId}, ${parentId})" class="btn btn-primary" style="font-size:20px;margin-top:10px">Reply</button>
+            `;
+            commentDiv.appendChild(replyForm);
+        }
+    </script>
 {% endblock %}

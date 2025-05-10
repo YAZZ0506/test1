@@ -12,9 +12,10 @@
             <div class="col-md-10">
                 <h1 style="font-size:70px">{{ user.user }}</h1>
                 <p style="font-size:50px">Email: {{ user.email }}</p>
+                <a href="{% url 'moments:edit_profile' %}" class="btn btn-primary btn-lg" style="font-size:20px">Edit Profile</a>
             </div>
         </div>
-        <div class="row" style="margin-top:62px">
+        <div class="row" style="margin-top:52px">
             <div class="col-md-4">
                 <p style="font-size:50px">Region</p>
             </div>
