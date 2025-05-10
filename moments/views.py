@@ -1,3 +1,4 @@
+from blueapps.conf.environ import SITE_URL
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -40,7 +41,7 @@ def submit_post(request):
         if text:
             status = Status(user=user, text=text, pics=name)
             status.save()
-        return redirect('/status')
+        return redirect('moments:show_status')
 
     return render(request, 'moments/my_post.html')
 

@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path
 from moments.views import submit_post, friends, show_status, show_user, signup
-
+app_name = 'moments'
 urlpatterns = [
     # path('admin/', admin.site.urls),
     # 由蓝鲸提供登录服务
@@ -27,7 +27,7 @@ urlpatterns = [
     path('user', show_user),
     path('post', submit_post),
     path('friends', friends),
-    path('status', show_status),
+    path('status', show_status, name='show_status'),
     # 退出和注册也由蓝鲸PAAS接管
     # path('exit', LogoutView.as_view(next_page='/'), name='logout'),
     # path('signup/', signup, name='signup'),
