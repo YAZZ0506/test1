@@ -30,7 +30,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                       </button>
-                      <a class="navbar-brand" href="/moments/static">WeChat</a>
+                      <a class="navbar-brand" href="{{ SITE_URL }}status">WeChat</a>
                     </div>
 
                     <!-- Collect the nav links, forms, and other content for toggling -->
@@ -49,7 +49,7 @@
                       </form>
                       <ul class="nav navbar-nav navbar-right">
                         <li><a href="#">About</a></li>
-                        <li><a href="{{ SITE_URL }}exit">Exit</a></li>
+                        <li><a href="{{ SITE_URL }}logout">Exit</a></li>
 {#                          <li>#}
 {#                              <form action="{% url 'logout' %}" method="post" style="display: inline;"> {# 把 'logout_url_name' 替换成你在 urls.py 中定义的名字 #}
 {#                                  {% csrf_token %}  {# 非常重要：为了安全必须包含 CSRF 令牌 #}

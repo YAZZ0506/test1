@@ -9,7 +9,7 @@
         {% for status in statuses %}
             <div class="row" id="status-{{ status.id }}">
                 <div class="col-md-2">
-                    <img src="{{ status.user.user_pic }}" class="img-responsive img-thumbnail">
+                    <img src="{{ STATIC_URL }}{{ status.user.user_pic }}" class="img-responsive img-thumbnail">
                 </div>
                 <div class="col-md-10">
                     <h1 style="font-size:70px">{{ status.user }}</h1>

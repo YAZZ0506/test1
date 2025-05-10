@@ -30,7 +30,7 @@
                         <label style="font-size:30px">Profile Picture</label>
                         {% if wechat_user.user_pic %}
                         <div style="margin-bottom: 10px">
-                            <img src="{{ wechat_user.user_pic }}" class="img-thumbnail" style="max-width: 200px">
+                            <img src="{{ STATIC_URL }}{{ wechat_user.user_pic }}" class="img-thumbnail" style="max-width: 200px">
                         </div>
                         {% endif %}
                         <input type="file" name="user_pic" class="form-control" style="font-size:20px">

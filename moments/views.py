@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.utils import timezone
+from django.conf import settings
 
 from .models import Status, WeChatUser, Comment, Like
 
@@ -158,10 +159,11 @@ def edit_profile(request):
         if 'user_pic' in request.FILES:
             uploaded_file = request.FILES['user_pic']
             name = 'static/image/' + uploaded_file.name
+            save_name = 'image/' + uploaded_file.name
             with open("./moments/{}".format(name), 'wb') as handle:
                 for block in uploaded_file.chunks():
                     handle.write(block)
-            user.user_pic = name
+            user.user_pic = save_name
             
         user.save()
         return redirect('moments:show_user')

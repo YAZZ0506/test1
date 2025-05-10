@@ -7,7 +7,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-2">
-                <img src="{{ user.user_pic }}" class="img-responsive img-thumbnail">
+                <img src="{{ STATIC_URL }}{{ user.user_pic }}" class="img-responsive img-thumbnail">
             </div>
             <div class="col-md-10">
                 <h1 style="font-size:70px">{{ user.user }}</h1>
