@@ -36,10 +36,10 @@
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                       <ul class="nav navbar-nav">
-                        <li {% block user %}{% endblock %}><a href="/user">User</a></li>
-                        <li {% block status %}{% endblock %}><a href="/status">Moments</a></li>
-                        <li {% block post %}{% endblock %}><a href="/post">Post</a></li>
-                        <li {% block friends %}{% endblock %}><a href="/friends">Friends</a></li>
+                        <li {% block user %}{% endblock %}><a href="{{ SITE_URL }}user">User</a></li>
+                        <li {% block status %}{% endblock %}><a href="{{ SITE_URL }}status">Moments</a></li>
+                        <li {% block post %}{% endblock %}><a href="{{ SITE_URL }}post">Post</a></li>
+                        <li {% block friends %}{% endblock %}><a href="{{ SITE_URL }}friends">Friends</a></li>
                       </ul>
                       <form class="navbar-form navbar-left" role="search">
                         <div class="form-group">
@@ -49,7 +49,7 @@
                       </form>
                       <ul class="nav navbar-nav navbar-right">
                         <li><a href="#">About</a></li>
-                        <li><a href="exit">Exit</a></li>
+                        <li><a href="{{ SITE_URL }}exit">Exit</a></li>
 {#                          <li>#}
 {#                              <form action="{% url 'logout' %}" method="post" style="display: inline;"> {# 把 'logout_url_name' 替换成你在 urls.py 中定义的名字 #}
 {#                                  {% csrf_token %}  {# 非常重要：为了安全必须包含 CSRF 令牌 #}
